@@ -18,7 +18,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-west-2
+        aws-region: ap-south-1
 
     - name: SSH into EC2 instance
       uses: appleboy/ssh-action@master
@@ -28,7 +28,7 @@ jobs:
         key: ${{ secrets.REMOTE_SERVER_PRIVATE_KEY }}
         port: ${{ secrets.REMOTE_SERVER_PORT }}
         script: |
-          cd /path/to/your/application
+          cd /opt/application
           git pull origin main
           docker build -t my-flask-app .
           docker stop my-flask-app || true
