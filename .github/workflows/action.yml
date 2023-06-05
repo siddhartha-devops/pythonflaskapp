@@ -28,8 +28,7 @@ jobs:
         key: ${{ secrets.REMOTE_SERVER_SSH_KEY }}
         port: ${{ secrets.REMOTE_SERVER_PORT }}
         script: |
-          cd /opt/application
-          sudo git clone origin git@github.com:siddhartha-devops/pythonflaskapp.git
+          cd /opt/git/pythonflaskapp
           sudo docker build -t my-flask-app .
           sudo docker stop my-flask-app || true
           sudo docker rm my-flask-app || true
