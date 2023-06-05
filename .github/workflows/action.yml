@@ -28,7 +28,7 @@ jobs:
         key: ${{ secrets.REMOTE_SERVER_SSH_KEY }}
         port: ${{ secrets.REMOTE_SERVER_PORT }}
         script: |
-          cd /opt
+          cd /opt/application
           git pull origin main
           docker build -t my-flask-app .
           docker stop my-flask-app || true
