@@ -29,6 +29,9 @@ jobs:
         port: ${{ secrets.REMOTE_SERVER_PORT }}
         script: |
           cd /opt/application
+          sudo git remote -v
+          sudo git remote remove master
+          sudo git remote add origin /opt/application
           sudo git pull origin main
           sudo docker build -t my-flask-app .
           sudo docker stop my-flask-app || true
