@@ -1,20 +1,40 @@
-name: Docker Image CI
+name: Build and Push to ECR
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - main  # Set your branch name
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag python-flask-app:$(date +%s)
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Login to Amazon ECR
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region ap-south-1  # Replace with your region
+          aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 166426622475.dkr.ecr.ap-south-1.amazonaws.com
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Build Docker image
+        run: |
+          docker build -t pythonflask-repo .
+        working-directory: ./path/to/Dockerfile
+
+      - name: Tag Docker image with ECR repository URL
+        run: |
+          docker tag pythonflask-repo:latest 166426622475.dkr.ecr.ap-south-1.amazonaws.com/pythonflask-repo:latest
+
+      - name: Push Docker image to ECR
+        run: |
+          docker push 166426622475.dkr.ecr.ap-south-1.amazonaws.com/pythonflask-repo:latest
+
     
       
