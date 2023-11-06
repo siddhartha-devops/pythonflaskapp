@@ -1,35 +1,20 @@
-name: Continuous Deployment
+name: Docker Image CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  deploy:
+
+  build:
+
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-south-1
-
-    - name: SSH into EC2 instance
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.REMOTE_HOST }}
-        username: ${{ secrets.REMOTE_SERVER_USERNAME }}
-        key: ${{ secrets.REMOTE_SERVER_SSH_KEY }}
-        port: ${{ secrets.REMOTE_SERVER_PORT }}
-        script: |
-          cd /opt/git/pythonflaskapp
-          sudo docker build -t my-flask-app .
-          sudo docker stop my-flask-app || true
-          sudo docker rm my-flask-app || true
-          sudo docker run -d --name my-flask-app -p 80:80 my-flask-app:latest
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag python-flask-app:$(date +%s)
+    
+      
