@@ -21,14 +21,12 @@ jobs:
           aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 166426622475.dkr.ecr.ap-south-1.amazonaws.com
         
 
-      - name: Build Docker image
-        run: |
-          docker build -t pythonflask-repo .
-        working-directory: ./path/to/Dockerfile
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag python-flask-image
 
       - name: Tag Docker image with ECR repository URL
         run: |
-          docker tag pythonflask-repo:latest 166426622475.dkr.ecr.ap-south-1.amazonaws.com/pythonflask-repo:latest
+          docker tag python-flask-image:latest 166426622475.dkr.ecr.ap-south-1.amazonaws.com/pythonflask-repo:latest
 
       - name: Push Docker image to ECR
         run: |
