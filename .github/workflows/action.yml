@@ -8,7 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -31,15 +32,10 @@ jobs:
         run: |
           docker push 166426622475.dkr.ecr.ap-south-1.amazonaws.com/pythonflask-repo:latest
 
-      - name: Notify Slack on success or failure
-        if: always() # Ensure this job runs regardless of the status of the previous jobs
-        run: |
-          if [ $? -eq 0 ]; then
-            SLACK_MESSAGE="Workflow passed successfully in ${{ github.workflow }}"
-            SLACK_ICON_EMOJI=":white_check_mark:"  # Custom emoji for success
-          else
-            SLACK_MESSAGE="Workflow failed in job ${{ github.job }} at step ${{ job.status }} - ${{ github.workflow }}.\nThe job steps were:\n${{ toJson(job) }}"
-            SLACK_ICON_EMOJI=":red_circle:"  # Custom emoji for failure
-          fi
-
-          curl -X POST -H 'Content-type: application/json' --data "{'channel':'your-slack-channel-name','username':'GitHub Actions','text':'$SLACK_MESSAGE','icon_emoji':'$SLACK_ICON_EMOJI'}" ${{ secrets.SLACK_WEBHOOK_URL }}
+      - name: Slack Notification
+        uses: act10ns/slack@v1
+        with: 
+          status: ${{ job.status }}
+          channel: '#meetups'
+          message: Build ${{ job.status }}
+        if: always()
