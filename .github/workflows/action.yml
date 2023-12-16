@@ -31,33 +31,22 @@ jobs:
         run: |
           docker push 166426622475.dkr.ecr.ap-south-1.amazonaws.com/pythonflask-repo:latest
 
+      - name: Notify Slack on success
         if: always() # Ensure this job runs regardless of the status of the previous jobs
-        steps:
-            - name: Notify Slack on success
-              uses: rtCamp/action-slack-notify@v2
-              env:
-                SLACK_CHANNEL: your-slack-channel-name  # Replace with your Slack channel name
-                SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}  # Slack webhook URL stored as a secret Workflow passed successfully in job notify at step Build and Push to ECR
-                SLACK_USERNAME: GitHub Actions
-                SLACK_ICON_EMOJI: ":white_check_mark:"  # Custom emoji for success
-                SLACK_MESSAGE: "Workflow passed successfully in ${{ github.workflow }}"
-      
-            - name: Notify Slack on failure with step information
-              if: failure()
-              uses: rtCamp/action-slack-notify@v2
-              env:
-                SLACK_CHANNEL: your-slack-channel-name  # Replace with your Slack channel name
-                SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}  # Slack webhook URL stored as a secret
-                SLACK_USERNAME: GitHub Actions
-                SLACK_ICON_EMOJI: ":red_circle:"  # Custom emoji for failure
-                SLACK_MESSAGE: "Workflow failed in job ${{ github.job }} at step ${{ job.status }} - ${{ github.workflow }}."
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: your-slack-channel-name  # Replace with your Slack channel name
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}  # Slack webhook URL stored as a secret
+          SLACK_USERNAME: GitHub Actions
+          SLACK_ICON_EMOJI: ":white_check_mark:"  # Custom emoji for success
+          SLACK_MESSAGE: "Workflow passed successfully in ${{ github.workflow }}"
 
-                The job steps were:
-                  ${{ toJson(job) }}
-
-
-
-      
-
-    
-      
+      - name: Notify Slack on failure with step information
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: your-slack-channel-name  # Replace with your Slack channel name
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}  # Slack webhook URL stored as a secret
+          SLACK_USERNAME: GitHub Actions
+          SLACK_ICON_EMOJI: ":red_circle:"  # Custom emoji for failure
+          SLACK_MESSAGE: "Workflow failed in job ${{ github.job }} at step ${{ job.status }} - ${{ github.workflow }}.\nThe job steps were:\n${{ toJson(job) }}"
