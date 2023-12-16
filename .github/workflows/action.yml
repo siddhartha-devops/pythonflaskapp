@@ -34,28 +34,31 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     needs: build
-    if: failure()
-
     steps:
-      - name: Notify Slack on success
-        if: success()
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_CHANNEL: your-slack-channel-name  # Replace with your Slack channel name
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}  # Slack webhook URL stored as a secret
-          SLACK_USERNAME: GitHub Actions
-          SLACK_ICON_EMOJI: ":white_check_mark:"  # Custom emoji for success
-          SLACK_MESSAGE: "Workflow passed successfully in job ${{ github.job }} at step ${{ github.job }} - ${{ github.workflow }}"
+        - name: Notify Slack on success
+          if: success()
+          uses: rtCamp/action-slack-notify@v2
+          env:
+            SLACK_CHANNEL: your-slack-channel-name  # Replace with your Slack channel name
+            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}  # Slack webhook URL stored as a secret
+            SLACK_USERNAME: GitHub Actions
+            SLACK_ICON_EMOJI: ":white_check_mark:"  # Custom emoji for success
+            SLACK_MESSAGE: "Workflow passed successfully in job ${{ github.job }} at step ${{ github.workflow }}"
+  
+        - name: Notify Slack on failure with step information
+          if: failure()
+          uses: rtCamp/action-slack-notify@v2
+          env:
+            SLACK_CHANNEL: your-slack-channel-name  # Replace with your Slack channel name
+            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}  # Slack webhook URL stored as a secret
+            SLACK_USERNAME: GitHub Actions
+            SLACK_ICON_EMOJI: ":red_circle:"  # Custom emoji for failure
+            SLACK_MESSAGE: |
+              Workflow failed in job ${{ github.job }} at step ${{ job.status }} - ${{ github.workflow }}.
+  
+              The job steps were:
+              ${{ toJson(job) }}
 
-      - name: Notify Slack on failure
-        if: failure()
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_CHANNEL: your-slack-channel-name  # Replace with your Slack channel name
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}  # Slack webhook URL stored as a secret
-          SLACK_USERNAME: GitHub Actions
-          SLACK_ICON_EMOJI: ":red_circle:"  # Custom emoji for failure
-          SLACK_MESSAGE: "Workflow failed in job ${{ github.job }} at step ${{ github.job }} - ${{ github.workflow }}"
       
 
     
