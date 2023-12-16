@@ -38,12 +38,13 @@ jobs:
 
     steps:
       - name: Notify failure to Slack
-        uses: slack/webhook-action@v2
+        uses: docker://slack/webhook-action:v2
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
-          payload: '{"text": "Workflow failed in job ${{ github.job }} at step ${{ github.job }} - ${{ github.workflow }}"}'
+            payload: '{"text": "Workflow failed in job ${{ github.job }} at step ${{ github.job }} - ${{ github.workflow }}"}'
 
+      
 
     
       
